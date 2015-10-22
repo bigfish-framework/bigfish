@@ -1,5 +1,5 @@
 {
-    "name": "bigfish/bigfish",
+    "name": "bigfish-framework/bigfish",
     "type": "framework",
     "description": "A framework for PHP web applications.",
     "keywords": ["php","framework"],
