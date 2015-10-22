@@ -1,0 +1,24 @@
+{
+    "name": "bigfish/bigfish",
+    "type": "framework",
+    "description": "A framework for PHP web applications.",
+    "keywords": ["php","framework"],
+    "homepage": "https://github.com/bigfish-framework/bigfish",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Mr Anchovy",
+            "email": "bigfish.framework@gmail.com",
+            "homepage": "https://github.com/bigfish-framework",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": ">=5.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "BigFish\\": "src"
+        }
+    }
+}
