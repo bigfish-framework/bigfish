@@ -26,7 +26,7 @@ class FrontController extends Service {
         $method = $this->getControllerMethod($request, $controller);
         $response = $controller->$method($request);
         if ($request->isHandled()) {
-            return $response;
+            $response->send($request);
         } else {
             throw new HttpException('Path [0] of the request was not handled', $request->handle(true));
         }

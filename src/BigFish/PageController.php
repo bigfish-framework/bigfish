@@ -45,6 +45,6 @@ class PageController extends Service {
     protected function render($page) {
         // $body = $this->app->twig->render($page);
         $body = 'Hello World';
-        return new Response($body);
+        return new Response($this->app, $body);
     }
 }
