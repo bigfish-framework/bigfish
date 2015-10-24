@@ -43,8 +43,7 @@ class PageController extends Service {
      * @return Response  The page as a Response object.
      */
     protected function render($page) {
-        // $body = $this->app->twig->render($page);
-        $body = 'Hello World';
+        $body = $this->app->twig->render($page);
         return new Response($this->app, $body);
     }
 }
