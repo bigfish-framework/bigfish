@@ -15,7 +15,9 @@
     ],
     "require": {
         "php": ">=5.5",
-        "raveren/kint": "^1.0"
+        "raveren/kint": "^1.0",
+        "symfony/http-foundation": "^2.7",
+        "twig/twig": "^1.22"
     },
     "autoload": {
         "psr-4": {
