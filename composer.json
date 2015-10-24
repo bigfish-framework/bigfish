@@ -14,7 +14,8 @@
         }
     ],
     "require": {
-        "php": ">=5.5"
+        "php": ">=5.5",
+        "raveren/kint": "^1.0"
     },
     "autoload": {
         "psr-4": {
