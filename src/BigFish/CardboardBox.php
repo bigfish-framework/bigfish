@@ -140,7 +140,7 @@ class CardboardBox {
      * @return $this         So calls can be chained.
      */
     public function set($name, $value = null, $reverse = false) {
-        if (is_array($name)) {
+        if (is_array($name) && $reverse === false) {
             array_walk($name, [$this, 'set'], true);
             return $this;
         }
