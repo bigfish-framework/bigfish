@@ -77,6 +77,10 @@ class CardboardBox {
                 if (!isset($this->_serviceInstances[$name])) {
                     $this->_serviceInstances[$name] = $service;
                 }
+            } catch (\Throwable $e) {
+                // PHP 7 compatibility
+                throw new Exception("Couldn't load service [$name]: "
+                    . lcfirst($e->getMessage()), $e);
             } catch (\Exception $e) {
                 throw new Exception("Couldn't load service [$name]: "
                     . lcfirst($e->getMessage()), $e);
@@ -161,6 +165,9 @@ class CardboardBox {
                     $this->_parameters[$parts[0]][$parts[1]][$parts[2]][$parts[3]] = $value;
                 }
             }
+        } catch (\Throwable $e) {
+            // PHP 7 compatibility
+            throw new Exception('CardboardBox parameter error: '.lcfirst($e->getMessage()));
         } catch (\Exception $e) {
             throw new Exception('CardboardBox parameter error: '.lcfirst($e->getMessage()));
         }

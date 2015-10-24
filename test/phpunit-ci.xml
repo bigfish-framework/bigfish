@@ -14,7 +14,7 @@
     </testsuites>
 
     <logging>
-        <log type="coverage-text" />
+        <log type="coverage-text" target="php://stdout" />
     </logging>
 
     <filter>
