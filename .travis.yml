@@ -14,4 +14,4 @@ matrix:
     - php: 7.0
     - php: hhvm
 
-script: phpunit --bootstrap test/bootstrap.php --coverage-text test
+script: phpunit -c test/phpunit-ci.xml

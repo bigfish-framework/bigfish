@@ -1,0 +1,28 @@
+<!--
+    BigFish unit test configuration for phpunit.
+
+    @copyright  Copyright (c) 2015 BigFish
+    @licence    MIT
+-->
+<phpunit
+    bootstrap="bootstrap.php">
+
+    <testsuites>
+        <testsuite name="BigFish Unit Tests">
+            <directory>tests</directory>
+        </testsuite>
+    </testsuites>
+
+    <logging>
+        <log type="coverage-html" target="results/coverage" />
+        <log type="testdox-html" target="results/testdox.html"/>
+        <log type="json" target="results/unit-tests.json" />
+    </logging>
+
+    <filter>
+        <blacklist>
+            <directory>../vendor</directory>
+        </blacklist>
+    </filter>
+
+</phpunit>
