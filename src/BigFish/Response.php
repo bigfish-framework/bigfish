@@ -12,8 +12,9 @@ use Symfony\Component\HttpFoundation;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use BigFish\HttpException;
 use BigFish\Response;
+use BigFish\Services\FactoryInterface;
 
-class Response {
+class Response implements FactoryInterface {
 
     /** Application dependencies container. */
     protected $app;
@@ -114,7 +115,6 @@ class Response {
     **/
     public function send(Request $request) {
         if (is_a($this->response, RedirectResponse::class)) {
-            
         } elseif ($this->isApi) {
             $status = $this->response->getStatusCode();
             if ($status < 300 && $status >= 200) {

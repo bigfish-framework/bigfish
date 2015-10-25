@@ -25,7 +25,7 @@ class PageController extends Service {
         // handle the whole of the path
         $page = $request->handle(true);
         if ($page === '') {
-            $page = 'pages/index.html.twig';
+            $page = 'pages/index-content.html.twig';
         } else {
             // need to be careful about characters in pages to avoid paths like /page/../secret
             if (!preg_match('|^[A-Za-z][A-Za-z0-9\\/]*$|', $page)) {

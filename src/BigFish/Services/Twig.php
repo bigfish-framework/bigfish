@@ -1,14 +1,11 @@
 <?php
-
 /**
  * BigFish service wrapper.
  *
  * @copyright  Copyright © 2015 [MrAnchovy](www.mranchovy.com)
  * @licence    MIT
  *
- * @TODO refactor to add default extension and anonymise as $app->template
-**/
-
+ */
 namespace BigFish\Services;
 
 use BigFish\Services\Service;
@@ -19,9 +16,6 @@ class Twig extends Service {
 
     /** The Twig instance. */
     protected $twig;
-
-    /** The directory to use for cached templates. */
-    protected $cacheDir;
 
     /** Twig environment options. */
     protected $environmentOptions = [];
@@ -34,22 +28,18 @@ class Twig extends Service {
     **/
     public function __construct($app) {
         parent::__construct($app);
-        $this->viewsDir = [
-            $app->get('twig.templatesDir'),
-            $app->get('bigfish.basedir') . '/views',
-        ];
-        $this->cacheDir = $app->get('local.cacheDir');
+        $this->viewsDir = $app->get('twig.templatesDir');
 
         $this->environmentOptions = [
-            'cache' => $app->get('local.cacheDir').'twig',
-            'auto_reload' => $app->get('debug') || $app->get('twig.reload'),
+            'cache' => $app->get('local.cacheDir').'/twig',
+            'auto_reload' => $app->get('app.debug') || !$app->get('twig.noreload'),
+            'strict_variables' => $app->get('app.debug') || !$app->get('twig.strict'),
         ];
 
-        $loader = new \Twig_Loader_Filesystem($this->viewsDir);
+        $loader = new \Twig_Loader_Filesystem($app->get('twig.templatesDir'));
         $this->twig = new \Twig_Environment($loader, $this->environmentOptions);
         $this->globals = [
-            'baseurl' => $this->app->request->getUri(null),
-            'secureurl' => $this->app->request->getUri(null, true),
+            'baseurl' => $this->app->request->getRequest()->getUriForPath(null),
         ];
     }
 

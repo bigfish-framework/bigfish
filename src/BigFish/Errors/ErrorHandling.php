@@ -85,7 +85,7 @@ class ErrorHandling extends Service {
     /**
      * Render an exception.
      */
-    protected function renderException($e) {
+    protected function renderException($e, $buffer = null) {
         $message = htmlspecialchars($e->getMessage());
         $line = $e->getLine();
         $file = htmlspecialchars($e->getFile());
@@ -110,9 +110,21 @@ class ErrorHandling extends Service {
             . "<p><small>Line $line of $file</small></p>\n"
             . $trace
             . "</div>";
-        if (php_sapi_name() === 'cli') {
+
+            if (php_sapi_name() === 'cli') {
             $out = strip_tags($out);
         }
-        echo $out;
+
+        if (null !== ($previous = $e->getPrevious())) {
+             $out .= '<div style="padding-left: 20px">'
+                . $this->renderException($previous, true)
+                . '</div>';
+        }
+
+        if ($buffer) {
+            return $out;
+        } else {
+            echo $out;
+        }
     }
 }

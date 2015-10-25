@@ -9,10 +9,11 @@
 namespace BigFish;
 
 use BigFish\Services\Service;
+use BigFish\Services\FactoryInterface;
 use BigFish\Exception;
 use Symfony\Component\HttpFoundation;
 
-class Request extends Service {
+class Request extends Service implements FactoryInterface {
 
     /** @const Request types. */
     const TYPE_HTTP = 1;

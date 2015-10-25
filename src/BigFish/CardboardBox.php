@@ -25,6 +25,7 @@
 namespace BigFish;
 
 use BigFish\Exception;
+use BigFish\Services\FactoryInterface;
 
 class CardboardBox {
     /** @const string Version number. */
@@ -62,7 +63,10 @@ class CardboardBox {
      */
     public function __get($name) {
         // lazy-load the service
-        if (!isset($this->_serviceInstances[$name])) {
+        if (isset($this->_serviceInstances[$name])) {
+            // the service has been instantiated so return it
+            return $this->_serviceInstances[$name];
+        } else {
             if (!isset($this->_serviceDefinitions[$name])) {
                 throw new Exception ("Service [$name] is not defined");
             } else {
@@ -73,9 +77,14 @@ class CardboardBox {
             }
             try {
                 $service = new $this->_serviceDefinitions[$name]($this, $name);
-                // allow the service to replace itself in the constructor
-                if (!isset($this->_serviceInstances[$name])) {
-                    $this->_serviceInstances[$name] = $service;
+                if ($service instanceof FactoryInterface) {
+                    return $service;
+                } else {
+                    // allow the service to replace itself in the constructor
+                    if (!isset($this->_serviceInstances[$name])) {
+                        $this->_serviceInstances[$name] = $service;
+                    }
+                    return $this->_serviceInstances[$name];
                 }
             } catch (\Throwable $e) {
                 // PHP 7 compatibility
@@ -86,8 +95,6 @@ class CardboardBox {
                     . lcfirst($e->getMessage()), $e);
             }
         }
-        // the service has been instantiated so return it
-        return $this->_serviceInstances[$name];
     }
 
     /**
