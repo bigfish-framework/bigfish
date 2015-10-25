@@ -103,22 +103,26 @@ class ErrorHandling extends Service {
             $trace[0] = ['file' => $file, 'line' => $line, 'function' => '', 'args' => []];
         }
 
-        $trace = php_sapi_name() === 'cli' ? '' : @Kint::trace($trace);
+        if (null !== ($previous = $e->getPrevious())) {
+             $deeper = '<div style="padding-left: 20px">'
+                . $this->renderException($previous, true)
+                . '</div>';
+            $trace = '';
+        } else {
+            $deeper = '';
+            $trace = php_sapi_name() === 'cli' ? '' : @Kint::trace($trace);
+        }
+
         $out = "<div style='font-family: sans-serif;'>\n"
             . "<h3>$class $error</h3>\n"
             . "<p style='color: red;'><strong>$message</strong></p>\n"
             . "<p><small>Line $line of $file</small></p>\n"
             . $trace
-            . "</div>";
+            . "</div>"
+            . $deeper;
 
-            if (php_sapi_name() === 'cli') {
+        if (php_sapi_name() === 'cli') {
             $out = strip_tags($out);
-        }
-
-        if (null !== ($previous = $e->getPrevious())) {
-             $out .= '<div style="padding-left: 20px">'
-                . $this->renderException($previous, true)
-                . '</div>';
         }
 
         if ($buffer) {
