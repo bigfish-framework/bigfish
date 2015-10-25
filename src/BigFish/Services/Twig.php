@@ -9,8 +9,11 @@
 namespace BigFish\Services;
 
 use BigFish\Services\Service;
+use BigFish\Exception;
 use BigFish\HttpException;
 use Twig_Error_Loader;
+use Aptoma\Twig\Extension\MarkdownExtension;
+use Aptoma\Twig\Extension\MarkdownEngine;
 
 class Twig extends Service {
 
@@ -35,12 +38,16 @@ class Twig extends Service {
             'auto_reload' => $app->get('app.debug') || !$app->get('twig.noreload'),
             'strict_variables' => $app->get('app.debug') || !$app->get('twig.strict'),
         ];
-
         $loader = new \Twig_Loader_Filesystem($app->get('twig.templatesDir'));
         $this->twig = new \Twig_Environment($loader, $this->environmentOptions);
         $this->globals = [
+            'html' => '<script>document.write("Added by script")</script>',
             'baseurl' => $this->app->request->getRequest()->getUriForPath(null),
         ];
+
+        $engine = new MarkdownEngine\ParsedownEngine();
+        $this->twig->addExtension(new MarkdownExtension($engine));
+        
     }
 
     public function getTemplate($name) {

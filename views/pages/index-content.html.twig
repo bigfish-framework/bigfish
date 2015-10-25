@@ -1,115 +1,55 @@
 {# ========================================================================== #
- # BigFish default login page template.                                       #
+ # BigFish default index page content template.                               #
  #                                                                            #
- # @copyright Copyright (c) 2015 [MrAnchovy](http:/www.mranchovy.com)         #
+ # @copyright Copyright (c) 2015 BigFish                                      #
  # @license   MIT                                                             #
  # ========================================================================== #}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+{# ---------------------------------------------------------- EXTENDS ------- #}
+{% extends 'pages/layouts/jumbotron.html.twig' %}
 
-{# ---------------------------------------------------------- TITLE --------- #}
-<title>{{- title|default('Missing title') -}}</title>
+{% set title %}{# ------------------------------------------- TITLE --------- #}
+Bigfish default index page
+{% endset %}
 
-{% if description is defined and not empty %}{# ------------- DESCRIPTION --- #}
-<meta name="description" content="{{- description -}}">
-{% endif %}
-
-{% if author is defined and not empty %}{# ------------------ AUTHOR -------- #}
-<meta name="author" content="{{- author -}}">
-{% endif %}
-
-{% if favicon is defined and not empty %}{# ----------------- FAVICON ------- #}
-<link rel="icon" href="{{ favicon }}">
-{% endif %}
-
-{# ---------------------------------------------------------- CSS ----------- #}
-<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
-<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css" rel="stylesheet">
-
-<style>
-	/* Move down content because we have a fixed navbar that is 50px tall */
-	body {
-		padding-top: 50px;
-		padding-bottom: 20px;
-	}
-</style>
-
-{# IE8 support of HTML5 elements and media queries #}
-<!--[if lt IE 9]>
-<script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
-<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-<![endif]-->
+{% set description %}{# ------------------------------------- DESCRIPTION --- #}
+{% endset %}
 
 {% block head %}{# ------------------------------------------ HEAD ---------- #}
-{% endblock %}
+{{ parent() }}
+{% endblock head %}
 
-</head>
-<body>
+{% set jumbotron = true %}{% block jumbotron %}{# ----------- JUMBOTRON ----- #}
 
-	<nav class="navbar navbar-inverse navbar-fixed-top">
-		<div class="container">
-			<div class="navbar-header">
-<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-	<span class="sr-only">Toggle navigation</span>
-	<span class="icon-bar"></span>
-	<span class="icon-bar"></span>
-	<span class="icon-bar"></span>
-</button>
-<a class="navbar-brand" href="#">Project name</a>
-			</div>
-			<div id="navbar" class="navbar-collapse collapse">
+<h1>Hello, world!</h1>
 
-{% if user.id is defined and not empty %}
-<button class="btn"><i class="fa fa-user fa-lg"></i> {{ user.name }}</button>
-<button class="btn"><i class="fa fa-sign-out fa-lg"></i> Sign out</button>
-{% else %}
-				<form class="navbar-form navbar-right">
-<div class="form-group">
-	<input type="text" placeholder="Email" class="form-control">
-</div>
-<div class="form-group">
-	<input type="password" placeholder="Password" class="form-control">
-</div>
-<button type="submit" class="btn btn-success"><i class="fa fa-sign-in fa-lg"></i> Sign in</button>
-				</form>
-{% endif %}
+<p>This is a template for a simple marketing or informational website. It
+includes a large callout called a jumbotron and three supporting pieces of
+content. Use it as a starting point to create something more unique.</p>
 
-			</div><!--/.navbar-collapse -->
-		</div>
-	</nav>
+<p><a class="btn btn-primary btn-lg" href="#" role="button">Learn more &raquo;</a></p>
 
-{% if jumbotron is defined and not empty %}{# --------------- JUMBOTRON ----- #}
-	<div class="jumbotron">
-		<div class="container">
-			{% block jumbotron %}{% endblock %}
-		</div>
-	</div>
-{% endif %}
+{% endblock jumbotron %}
+{% block content %}{# --------------------------------------- CONTENT ------- #}
+{% markdown %}
 
-	<div class="container">
+This is the place for some content. We really want to use **markdown** formatting
+here, I hope this is going to be easy.
 
-{% block pageContent %}{# ----------------------------------- CONTENT ------- #}
-Content goes here
-{% endblock %}
+-   For lists
+-   Like this  one
 
-{# ---------------------------------------------------------- FOOTER -------- #}
-		<hr>
-		<footer>
-			<p>Copyright &copy; 2015 BigFish</p>
-		</footer>
+        $codeblock;
+        // does it work?
 
-	</div> <!-- /container -->
+-   Like this  one
+    1. not forgetting
+    1. numbered lists
+    1. like this one
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+{% endmarkdown %}
+
+{% endblock content %}
 
 {% block bottom %}{# ---------------------------------------- BOTTOM -------- #}
-{% endblock %}
-
-</body>
-</html>
+{{ parent() }}
+{% endblock bottom %}

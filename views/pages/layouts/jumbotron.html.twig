@@ -1,0 +1,35 @@
+{# ========================================================================== #
+ # BigFish jumbotron content layout template.                                 #
+ #                                                                            #
+ # @copyright Copyright (c) 2015 BigFish                                      #
+ # @license   MIT                                                             #
+ # ========================================================================== #}
+{# ---------------------------------------------------------- EXTENDS ------- #}
+{% extends 'pages/layouts/page.html.twig' %}
+
+{% block head %}{# ------------------------------------------ HEAD ---------- #}
+<style>
+    body { padding-top: 70px; }
+</style>
+{% endblock %}
+
+{% block pageContent %}{# ----------------------------------- CONTENT ------- #}
+
+{% if jumbotron is defined %}{# ----------------------------- JUMBOTRON ----- #}
+	<div class="jumbotron">
+		<div class="container">
+			{% block jumbotron %}{% endblock %}
+		</div>
+	</div>
+{% endif %}
+
+	<div class="container">
+
+{% block content %}{% endblock %}
+
+	</div>
+
+{% endblock pageContent %}
+
+{% block bottom %}{# ---------------------------------------- BOTTOM -------- #}
+{% endblock bottom %}

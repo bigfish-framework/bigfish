@@ -1,0 +1,75 @@
+{# ========================================================================== #
+ # BigFish default page template.                                             #
+ #                                                                            #
+ # @copyright Copyright (c) 2015 BigFish                                      #
+ # @license   MIT                                                             #
+ # ========================================================================== #}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+
+{# ---------------------------------------------------------- TITLE --------- #}
+<title>{{- title|default('Missing title') -}}</title>
+
+{% if description is defined %}{# --------------------------- DESCRIPTION --- #}
+<meta name="description" content="{{- description -}}">
+{% endif %}
+
+{% if author is defined %}{# -------------------------------- AUTHOR -------- #}
+<meta name="author" content="{{- author -}}">
+{% endif %}
+
+{% if favicon is defined %}{# ------------------------------- FAVICON ------- #}
+<link rel="icon" href="{{ favicon }}">
+{% endif %}
+
+{# ---------------------------------------------------------- CSS ----------- #}
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css" rel="stylesheet">
+
+<style>
+	body {
+		padding-top: 50px;
+	}
+</style>
+
+{# IE8 support of HTML5 elements and media queries #}
+<!--[if lt IE 9]>
+<script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+<![endif]-->
+
+{% block head %}{# ------------------------------------------ HEAD ---------- #}
+{% endblock %}
+
+</head>
+<body>
+
+{# ---------------------------------------------------------- NAV ----------- #}
+{% include 'pages/layouts/topnav.html.twig' %}
+
+	<div class="container">
+
+{% block pageContent %}{# ----------------------------------- CONTENT ------- #}
+{% endblock %}
+
+{# ---------------------------------------------------------- FOOTER -------- #}
+		<hr>
+		<footer>
+			<p>Copyright &copy; 2015 BigFish</p>
+		</footer>
+
+	</div> <!-- /container -->
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+
+{% block bottom %}{# ---------------------------------------- BOTTOM -------- #}
+{% endblock %}
+
+</body>
+</html>
