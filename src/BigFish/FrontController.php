@@ -1,6 +1,9 @@
 <?php
 /**
- * BigFish Controller base class.
+ * BigFish FrontController.
+ *
+ * Note this does NOT extend `Bigfish\Controllers\Controller` because it is not a
+ * controller!
  *
  * @copyright  Copyright © 2015 [MrAnchovy](www.mranchovy.com)
  * @licence    MIT
@@ -12,6 +15,7 @@ use BigFish\Services\Service;
 use BigFish\CardboardBox;
 use BigFish\Request;
 use BigFish\HttpException;
+use BigFish\Controllers\PageController;
 
 class FrontController extends Service {
 
@@ -22,8 +26,24 @@ class FrontController extends Service {
      * @return Response
     **/
     public function execute(Request $request) {
-        $controller = $this->getController($request);
+        // speculatively handle the first part of the path
+        $name = $request->handle(1, true)[0];
+        if ($name === ['']) {
+            $controller = $this->getDefaultController();
+        } else {
+            $controller = $this->getController($name);
+            if ($controller === false) {
+                $controller = $this->getDefaultController();
+            } else {
+                // successfully handled
+                $request->handle(1);
+            }
+        }
         $method = $this->getControllerMethod($request, $controller);
+        if ($method === false) {
+            throw new HttpException([
+                'The @0 controller does not respond to @1 requests', $name, strtoupper($method)]);
+        }
         $response = $controller->$method($request);
         if ($request->isHandled()) {
             $response->send($request);
@@ -39,26 +59,32 @@ class FrontController extends Service {
      * @param  Request
      * @return Response
     **/
-    protected function getController($request) {
-        $path = substr($request->getRequest()->getPathInfo(), 1);
-        $this->parts = explode('/', $path);
-        $controller = $this->parts[0];
-        if ($controller === '') {
-            $class = $this->app->get('app.defaultController');
-        } else {
-            $class = $this->app->get('app.namespace') . 'Controller\\Controller_' . $controller;
-            array_shift($this->parts);
-        }
+    protected function getController($name) {
+        // see if the controller exists
+        $class = $this->app->get("app.controllers.$name");
         if (class_exists($class)) {
-            $c = new $class($this->app);
-            $r = new \ReflectionClass($c);
+            $controller = new $class($this->app, $name);
+            // check for case consistency
+            $r = new \ReflectionClass($controller);
             if ($r->getName() === $class) {
-                return $c;
+                return $controller;
+            } else {
+                return false;
             }
+        } else {
+            return false;
         }
-        $controller = $this->app->get('app.defaultController');
+    }
 
-        return new $controller($this->app);
+    /**
+     * Get the default controller.
+     *
+     * @param  string      The name to invoke it as.
+     * @return Controller  An instance of the default controller class.
+    **/
+    protected function getDefaultController($name = null) {
+        $class = $this->app->get('app.defaultController', PageController::class);
+        return new $class($this->app, $name);
     }
 
     /**
@@ -68,38 +94,12 @@ class FrontController extends Service {
      * @return Response
     **/
     protected function getControllerMethod($request, $controller) {
-        $method = $request->getMethod();
+        $method = ucfirst(strtolower($request->getMethod()));
         $call = "route$method";
         if (is_callable([$controller, $call])) {
             return $call;
         } else {
-            throw new HttpException([
-                'This controller does not respond to 0 requests', $method]);
+            return false;
         }
     }
-
-    /**
-     * Get the parts of a path.
-     *
-     * Note that a trailing slash is counted as a part and is the empty string,
-     * not null.
-     * 
-     * @return  array  The parts imploded into an array.
-    **/
-    protected function deprecated_getParts($def, $extra = false) {
-        $parts =& $this->parts;
-        // replace empty strings with nulls - this means that trailing slashes will be ignored
-        array_walk($parts, function (&$v, $k) { $v === '' && ($v = null); });
-        $nDef = count($def);
-        $nParts = count($parts);
-        $padding = $nDef > $nParts ? array_fill(0, $nDef - $nParts, null) : [];
-        if ($extra) {
-            return [array_combine($def, array_merge(array_slice($parts, 0, $nDef), $padding)), array_slice($parts, $nDef)];
-        } elseif ($nParts <= $nDef) {
-            return array_combine($def, array_merge($parts, $padding));
-        } else {
-            throw new HttpException('The request path contained too many parts');
-        }
-    }
-
 }

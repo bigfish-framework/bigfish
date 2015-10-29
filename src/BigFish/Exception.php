@@ -32,7 +32,23 @@ class Exception extends \Exception {
     public function __construct($message = null, $previous = null) {
         if (is_array($message)) {
             if (count($message) > 1) {
-                $message = strtr(array_shift($message), $message);
+                $temp = array_shift($message);
+                $vars = $message;
+                $message = $temp;
+                if (is_array($vars[0])) {
+                    $vars = $vars[0];
+                } else {
+                    foreach ($vars as $label => $value) {
+                        $temp = [];
+                        if (is_string($label)) {
+                            $temp[$label] = $value;
+                        } else {
+                            $temp["@$label"] = $value;
+                        }
+                        $vars = $temp;
+                    }
+                }
+                $message = strtr($message, $vars);
             } else {
                 $message = $message[0];
             }

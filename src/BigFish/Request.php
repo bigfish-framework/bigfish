@@ -21,7 +21,7 @@ class Request extends Service implements FactoryInterface {
     /** @var The type of request. */
     public $type;
 
-    /** @var The Symfony Request object. */
+    /** @var The request input from $_GET, $_POST or a JSON body. */
     protected $input;
 
     /** @var The Symfony Request object. */
@@ -46,7 +46,7 @@ class Request extends Service implements FactoryInterface {
         } else {
             throw new HttpException;
         }
-        $this->unhandled = explode('/', $this->request->getPathInfo());
+        $this->unhandled = explode('/', substr($this->request->getPathInfo(), 1));
         return $this;
     }
 
@@ -91,18 +91,55 @@ class Request extends Service implements FactoryInterface {
     }
 
     /**
+     * Get a Uri.
+     *
+     * @return  string  The URI.
+     */
+    public function getUrl() {
+        return $this->request->getUriForPath(null);
+    }
+
+    /**
      * Handle the path.
      *
-     * @param  true    True returns the whole unhandled path.
-     * @return string  The path.
+     * @param  mixed    - null (default) returns all parts as an array
+     *                  - true returns the whole path as a string, or null if empty
+     *                  - an integer returns an array of that length, padded with nulls
+     * @param  boolean  Set to true to get the path without confirming it as handled.
+     * @return string|array  The path.
      */
-    public function handle($arg) {
-        if (true === $arg) {
-            $this->unhandled = [];
-            $path = implode('/', $this->unhandled);
-            return $path;
+    public function handle($count = null, $test = false) {
+        if (null === $count || true === $count || ($diff = $count - count($this->unhandled)) === 0) {
+            // handle the whole path
+            if ($count === true) {
+                $handled = implode('/', $this->unhandled);
+                if ($handled === '') {
+                    $handled = null;
+                }
+            } else {
+                $handled = $this->unhandled;
+            }
+            if (!$test) {
+                $this->unhandled = [];
+            }
+            return $handled;
+        } elseif ($diff < 0) {
+            // not handling the whole path
+            $handled = array_slice($this->unhandled, 0, $count);
+            if (!$test) {
+                $this->unhandled = array_slice($this->unhandled, $count);
+            }
+            return $handled;
+        } else {
+            // $diff > 0 so asking for more than in the path
+            $handled = array_merge($this->unhandled, array_fill(0, $diff, null));
+            if (!$test) {
+                $this->unhandled = [];
+            }
+            return $handled;
         }
     }
+
     /**
      * Check path handling.
      *
@@ -110,5 +147,14 @@ class Request extends Service implements FactoryInterface {
      */
     public function isHandled() {
         return $this->unhandled === [];
+    }
+
+    /**
+     * Check path handling.
+     *
+     * @return boolean  True iff the path has been fully handled.
+     */
+    public function isXhr() {
+        return $this->request->isXmlHttpRequest();
     }
 }
