@@ -29,11 +29,11 @@ class FrontController extends Service {
         // speculatively handle the first part of the path
         $name = $request->handle(1, true)[0];
         if ($name === ['']) {
-            $controller = $this->getDefaultController();
+            $controller = $this->getDefaultController($request);
         } else {
-            $controller = $this->getController($name);
+            $controller = $this->getController($request, $name);
             if ($controller === false) {
-                $controller = $this->getDefaultController();
+                $controller = $this->getDefaultController($request);
             } else {
                 // successfully handled
                 $request->handle(1);
@@ -44,7 +44,7 @@ class FrontController extends Service {
             throw new HttpException([
                 'The @0 controller does not respond to @1 requests', $name, strtoupper($method)]);
         }
-        $response = $controller->$method($request);
+        $response = $controller->$method();
         if ($request->isHandled()) {
             $response->send($request);
         } else {
@@ -59,11 +59,11 @@ class FrontController extends Service {
      * @param  Request
      * @return Response
     **/
-    protected function getController($name) {
+    protected function getController(Request $request, $name) {
         // see if the controller exists
         $class = $this->app->get("app.controllers.$name");
         if (class_exists($class)) {
-            $controller = new $class($this->app, $name);
+            $controller = new $class($this->app, $request, $name);
             // check for case consistency
             $r = new \ReflectionClass($controller);
             if ($r->getName() === $class) {
@@ -82,9 +82,9 @@ class FrontController extends Service {
      * @param  string      The name to invoke it as.
      * @return Controller  An instance of the default controller class.
     **/
-    protected function getDefaultController($name = null) {
+    protected function getDefaultController(Request $request, $name = null) {
         $class = $this->app->get('app.defaultController', PageController::class);
-        return new $class($this->app, $name);
+        return new $class($this->app, $request, $name);
     }
 
     /**

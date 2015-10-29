@@ -22,11 +22,11 @@ class PageController extends Controller {
      * @param  Request  The request to handle.
      * @return Response  The page as a Response object.
      */
-    public function routeGet(Request $request) {
+    public function routeGet() {
         // handle the whole of the path
-        $page = $request->handle(true);
+        $page = $this->request->handle(true);
         if ($page === null) {
-            $page = 'pages/index-content.html.twig';
+            $page = 'pages/index.html.twig';
         } else {
             // need to be careful about characters in pages to avoid paths like /page/../secret
             if (!preg_match('|^[A-Za-z][A-Za-z0-9\\-\\/]*$|', $page)) {
@@ -35,16 +35,5 @@ class PageController extends Controller {
             $page = "pages/content/$page.html.twig";
         }
         return $this->render($page);
-    }
-
-    /**
-     * Render a page.
-     *
-     * @param  string  Request  The request to handle.
-     * @return Response  The page as a Response object.
-     */
-    protected function render($page) {
-        $body = $this->app->twig->render($page);
-        return new Response($this->app, $body);
     }
 }

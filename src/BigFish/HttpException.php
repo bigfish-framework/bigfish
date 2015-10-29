@@ -11,7 +11,7 @@ use \BigFish\Exception;
 
 class HttpException extends Exception {
 
-    protected $status;
+    protected $status = 404;
     protected $errors;
     protected $redirectUrl;
 
@@ -19,10 +19,9 @@ class HttpException extends Exception {
      * Constructor.
      *
     **/
-    public function __construct($message = 'Not found', $status = 404, $errors = null, $previous = null) {
-        $this->status = (int)$status;
-        if (is_array($errors)) {
-            $this->errors = $errors;
+    public function __construct($message = 'Not found', $status = null, $previous = null) {
+        if ($status !== null) {
+            $this->status = (int)$status;
         }
         parent::__construct($message, $previous);
     }

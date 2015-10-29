@@ -6,11 +6,12 @@
  * @licence    MIT
  */
 
-namespace BigFish\Errors;
+namespace BigFish;
 
 use BigFish\Services\Service;
 use BigFish\Exception;
 use BigFish\HttpException;
+use BigFish\Controllers\ErrorController;
 use Kint;
 
 class ErrorHandling extends Service {
@@ -40,10 +41,26 @@ class ErrorHandling extends Service {
      * Exception handler.
      */
     public function handleException($e) {
-        if (!is_a($e, HttpException::class)) {
-            $this->logError($e);
+
+        if (!is_a($e, HttpException::class) && $this->app->get('app.debug')) {
+            ini_set('display_errors', 1);
+            $this->renderException($e);
+        } else {
+            try {
+                $c = new ErrorController($this->app, $this->app->request);
+                $response = $c->getErrorResponse($e);
+                $response->send($this->app->request);
+            } catch (\Throwable $e) {
+                // PHP 7 compatibility
+                echo 'Fatal error in error handler.';
+            } catch (\Exception $e) {
+                if ($this->app->get('app.debug')) {
+                    $this->renderException($e);
+                } else {
+                    echo 'Fatal error in error handler.';
+                }
+            }
         }
-        $this->renderException($e);
     }
 
     /**

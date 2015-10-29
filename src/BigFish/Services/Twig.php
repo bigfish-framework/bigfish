@@ -54,7 +54,7 @@ class Twig extends Service {
         try {
             return $this->twig->loadTemplate($name);
         } catch (Twig_Error_Loader $e) {
-            throw new HttpException(['Template :tpl does not exist', [':tpl' => $name]]);
+            throw new HttpException(['Could not load template "@0": @1', $name, $e->getMessage()]);
         }
     }
 

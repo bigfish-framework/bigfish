@@ -38,15 +38,15 @@ class Exception extends \Exception {
                 if (is_array($vars[0])) {
                     $vars = $vars[0];
                 } else {
+                    $temp = [];
                     foreach ($vars as $label => $value) {
-                        $temp = [];
                         if (is_string($label)) {
                             $temp[$label] = $value;
                         } else {
                             $temp["@$label"] = $value;
                         }
-                        $vars = $temp;
                     }
+                    $vars = $temp;
                 }
                 $message = strtr($message, $vars);
             } else {
