@@ -31,6 +31,26 @@ class Request extends Service implements FactoryInterface {
     protected $unhandled;
 
     /**
+    **/
+    public function acceptsJson($prefers = null) {
+        return $this->accepts('application/json', $prefers);
+    }
+
+    /**
+    **/
+    public function accepts($contentType, $prefers = null) {
+        static $accepts;
+        if ($accepts === null) {
+            $accepts = $this->request->getAcceptableContentTypes();
+        }
+        if ($prefers) {
+            return $accepts[0] === $contentType;
+        } else {
+            return in_array($contentType, $accepts);
+        }
+    }
+
+    /**
      * Create a request.
      *
      * The request is normally created from PHP globals but if an array is passed
@@ -57,7 +77,7 @@ class Request extends Service implements FactoryInterface {
             // lazy load it
             if (strpos($this->request->headers->get('Content-Type'), 'application/json') === 0) {
                 try {
-                    $this->input = json_decode($this->request->content);
+                    $this->input = json_decode($this->request->getContent());
                 } catch (\Exception $e) {
                     throw new HttpException('Malformed JSON body', 400);
                 }

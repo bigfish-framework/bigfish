@@ -25,9 +25,6 @@ class Response implements FactoryInterface {
     /** Data for API responses. */
     protected $data;
 
-    /** Data for API responses. */
-    protected $isApi;
-
     /** Error message for API responses. */
     protected $message;
 
@@ -46,16 +43,6 @@ class Response implements FactoryInterface {
         if ($body !== null) {
             $this->setBody($body);
         }
-    }
-
-    /**
-     * Set API errors.
-    **/
-    public function setApiError($message, $errors = null) {
-        $this->apiErrorMessage = $message;
-        $this->apiErrors = $errors;
-        $this->isApi = true;
-        return $this; // chainable
     }
 
     /**
@@ -84,14 +71,6 @@ class Response implements FactoryInterface {
     }
 
     /**
-     * Set extra data.
-    **/
-    public function setExtra($data) {
-        $this->extra = $data;
-        return $this; // chainable
-    }
-
-    /**
      * Set body.
     **/
     public function setBody($body) {
@@ -115,30 +94,12 @@ class Response implements FactoryInterface {
     **/
     public function send(Request $request) {
         if (is_a($this->response, RedirectResponse::class)) {
-        } elseif ($this->isApi) {
-            $status = $this->response->getStatusCode();
-            if ($status < 300 && $status >= 200) {
-                $payload = [
-                    'status' => 'OK',
-                    'data' => $this->data,
-                ];
-            } else {
-                $message = $this->apiErrorMessage ? $this->apiErrorMessage : 'Error';
-                $payload = [
-                    'status' => 'error',
-                    'message' => $message,
-                ];
-                if ($this->apiErrors !== null) {
-                    $payload['errors'] = $this->apiErrors;
-                }
-                if ($this->data !== null) {
-                    $payload['data'] = $this->apiErrors;
-                }
-            }
-            if ($request->request->query->has('callback')) {
+        } elseif ($this->data !== null) {
+            $syRequest = $request->getRequest();
+            if ($syRequest->query->has('callback')) {
                 $this->response->headers->set('Content-Type', 'text/javascript');
-                $this->response->setContent($request->request->query->get('callback')
-                    . '(' . json_encode($payload) . ');');
+                $this->response->setContent($syRequest->query->get('callback')
+                    . '(' . json_encode($this->data) . ');');
             } else {
                 if ($request->acceptsJson(true)) {
                     $this->response->headers->set('Content-Type', 'application/json');
@@ -147,7 +108,7 @@ class Response implements FactoryInterface {
                     $this->response->headers->set('Content-Type', 'text/plain');
                     $pretty = JSON_PRETTY_PRINT;
                 }
-                $this->response->setContent(json_encode($payload, $pretty));
+                $this->response->setContent(json_encode($this->data, $pretty));
             }
         }
         $this->response->prepare($request->getRequest());

@@ -28,7 +28,11 @@ class ErrorController extends Controller {
         if (!is_a($e, 'Exception')) {
             throw new Exception('No exception provided to error controller');
         }
-        return $this->getPageResponse($e);
+        if ($this->request->isXhr()) {
+            return $this->getTextResponse($e);
+        } else {
+            return $this->getPageResponse($e);
+        }
     }
 
     /**
@@ -83,10 +87,13 @@ class ErrorController extends Controller {
      * @param  Response
      * @return Response
      */
-    public function getTextResponse($request, $e) {
+    public function getTextResponse($e) {
         $response = new Response($this->app);
-        $response->setStatus($this->status);
-        $response->setBody($e->getMessage());
+        $status = is_a($e, HttpException::class) ? $e->getStatus() : 500;
+        $response->setStatus($status);
+        if ($this->app->get('app.debug')) {
+            $response->setBody($e->getMessage());
+        }
         return $response;
     }
 }

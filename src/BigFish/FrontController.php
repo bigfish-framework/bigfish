@@ -42,7 +42,7 @@ class FrontController extends Service {
         $method = $this->getControllerMethod($request, $controller);
         if ($method === false) {
             throw new HttpException([
-                'The @0 controller does not respond to @1 requests', $name, strtoupper($method)]);
+                'The @0 controller does not respond to @1 requests', $name, $request->getMethod()]);
         }
         $response = $controller->$method();
         if ($request->isHandled()) {
@@ -94,7 +94,11 @@ class FrontController extends Service {
      * @return Response
     **/
     protected function getControllerMethod($request, $controller) {
-        $method = ucfirst(strtolower($request->getMethod()));
+        if ($request->isXhr()) {
+            $method = "Xhr";
+        } else {
+            $method = ucfirst(strtolower($request->getMethod()));
+        }
         $call = "route$method";
         if (is_callable([$controller, $call])) {
             return $call;
