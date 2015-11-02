@@ -85,5 +85,4 @@ class Exception extends \Exception {
         $this->code = 'Fatal error';
         return $this;
     }
-
 }
